@@ -6,18 +6,49 @@ pub fn derive_svg_component(input: TokenStream) -> TokenStream {
     let ast: syn::DeriveInput =
         syn::parse(input).expect("derive_svg_component syn::parse(input) failed");
     let ident = &ast.ident;
+    // let get_html_variants: TokenStream;
+    // let get_class_variants: TokenStream;
+    //to tired to think how to do it without .clone()
+    let get_html_variants = match ast.data.clone() {
+        syn::Data::Enum(enum_item) => enum_item.variants.into_iter().map(|v| {
+            let variant_ident = v.ident;
+            quote!{
+                SvgType::#variant_ident(svg_props) => html! {
+                    <#variant_ident
+                      height={svg_props.height.clone()}
+                      width={svg_props.width.clone()}
+                      fill={svg_props.fill.clone()}
+                      spin={svg_props.spin}
+                      rotate={svg_props.rotate.clone()}
+                      theme={svg_props.theme.clone()}
+                    />
+                }
+            }
+        }),
+        _ => panic!("SvgComponent works only on enums"),
+    };
+    let get_class_variants = match ast.data {
+        syn::Data::Enum(enum_item) => enum_item.variants.into_iter().map(|v| {
+            let variant_ident = v.ident;
+            //todo: use convert-case
+            quote!{
+                SvgType::#variant_ident(_) => AttrValue::Static("anticon-check-circle")
+            }
+        }),
+        _ => panic!("SvgComponent works only on enums"),
+    };
     let gen = quote! {
         impl SvgComponent for #ident {
             fn get_html(&self) -> Html {
                 match self {
-
+                    #(#get_html_variants),*
                 }
-            };
+            }
             fn get_class(&self) -> AttrValue {
                 match *self {
-
+                    #(#get_class_variants),*
                 }
-            };
+            }
         }
     };
     gen.into()
