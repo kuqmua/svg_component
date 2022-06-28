@@ -1,5 +1,7 @@
 use proc_macro::TokenStream;
 use quote::quote;
+use convert_case::Case;
+use convert_case::Casing;
 
 #[proc_macro_derive(SvgComponent)]
 pub fn derive_svg_component(input: TokenStream) -> TokenStream {
@@ -30,9 +32,9 @@ pub fn derive_svg_component(input: TokenStream) -> TokenStream {
     let get_class_variants = match ast.data {
         syn::Data::Enum(enum_item) => enum_item.variants.into_iter().map(|v| {
             let variant_ident = v.ident;
-            //todo: use convert-case
+            let class =  &format!("anticon-{}", variant_ident.to_string().to_case(Case::Kebab));
             quote!{
-                SvgType::#variant_ident(_) => AttrValue::Static("anticon-check-circle")
+                SvgType::#variant_ident(_) => AttrValue::Static(#class)
             }
         }),
         _ => panic!("SvgComponent works only on enums"),
