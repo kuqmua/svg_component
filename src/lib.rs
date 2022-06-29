@@ -12,6 +12,7 @@ pub fn derive_svg_component(input: TokenStream) -> TokenStream {
     // let get_class_variants: TokenStream;
     //to tired to think how to do it without .clone()
     //had some doubts about imports
+    //TODO: MAKE THEM FULL PATH FROM START
     let imports = match ast.data.clone() {
         syn::Data::Enum(enum_item) => enum_item.variants.into_iter().map(|v| {
             let variant_ident = v.ident;
