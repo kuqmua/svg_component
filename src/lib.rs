@@ -11,9 +11,7 @@ pub fn derive_svg_component(input: TokenStream) -> TokenStream {
     // let get_html_variants: TokenStream;
     // let get_class_variants: TokenStream;
     //to tired to think how to do it without .clone()
-    //had some doubts about imports
-    //TODO: MAKE THEM FULL PATH FROM START
-    let imports = match ast.data.clone() {
+    let get_html_variants = match ast.data.clone() {
         syn::Data::Enum(enum_item) => enum_item.variants.into_iter().map(|v| {
             let variant_ident = v.ident;
             let module = syn::Ident::new(
@@ -21,17 +19,8 @@ pub fn derive_svg_component(input: TokenStream) -> TokenStream {
                 ident.span(),
             );
             quote!{
-                use crate::components::ant_design::svg::#module::#variant_ident;
-            }
-        }),
-        _ => panic!("SvgComponent works only on enums"),
-    };
-    let get_html_variants = match ast.data.clone() {
-        syn::Data::Enum(enum_item) => enum_item.variants.into_iter().map(|v| {
-            let variant_ident = v.ident;
-            quote!{
                 SvgType::#variant_ident(svg_props) => html! {
-                    <#variant_ident
+                    <crate::components::ant_design::svg::#module::#variant_ident
                       height={svg_props.height.clone()}
                       width={svg_props.width.clone()}
                       fill={svg_props.fill.clone()}
@@ -55,7 +44,6 @@ pub fn derive_svg_component(input: TokenStream) -> TokenStream {
         _ => panic!("SvgComponent works only on enums"),
     };
     let gen = quote! {
-        #(#imports)*
         impl SvgComponent for #ident {
             fn get_html(&self) -> Html {
                 match self {
