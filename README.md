@@ -1,1 +1,1 @@
-# svg_component
+### [setup](https://github.com/kuqmua/tufa_project/blob/main/setup.md#heading22)
