@@ -8,6 +8,7 @@
 
 #[proc_macro_derive(SvgComponent)]
 pub fn derive_svg_component(input: proc_macro::TokenStream) -> proc_macro::TokenStream {
+    proc_macro_helpers::panic_location::panic_location("SvgComponent");
     use convert_case::Casing;
     let ast: syn::DeriveInput = syn::parse(input).expect("SvgComponent syn::parse(input) failed");
     let ident = &ast.ident;
