@@ -18,9 +18,8 @@ pub fn svg_component(input: proc_macro::TokenStream) -> proc_macro::TokenStream 
         syn::Data::Enum(enum_item) => enum_item.variants.into_iter().map(|v| {
             let variant_ident = v.ident;
             let module = syn::Ident::new(
-                &convert_case::Casing::to_case(
+                &proc_macro_helpers::to_lower_snake_case::ToLowerSnakeCase::to_lower_snake_case(
                     &variant_ident.to_string(),
-                    convert_case::Case::Snake,
                 ),
                 ident.span(),
             );
@@ -44,9 +43,8 @@ pub fn svg_component(input: proc_macro::TokenStream) -> proc_macro::TokenStream 
             let variant_ident = v.ident;
             let class = &format!(
                 "anticon-{}",
-                convert_case::Casing::to_case(
-                    &variant_ident.to_string(),
-                    convert_case::Case::Kebab
+                proc_macro_helpers::to_lower_snake_case::ToLowerSnakeCase::to_lower_snake_case(
+                    &variant_ident.to_string()
                 )
             );
             quote::quote! {
